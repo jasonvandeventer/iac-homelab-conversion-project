@@ -22,19 +22,41 @@ def sonarr():
 
 @sonarr.command()
 def deploy():
-    """Deploy the Sonarr container"""
+    """Deploy the Sonarr container with interactive configuration"""
+    click.echo("🔧 Configuring Sonarr deployment...")
+
+    external_port = click.prompt('External port', default=8989, type=int)
+    config_path = click.prompt('Config directory path', default='/mnt/testconfigs/sonarr')
+    puid = click.prompt('User ID (PUID)', default='1000')
+    pgid = click.prompt('Group ID (PGID)', default='1000')
+    timezone = click.prompt('Timezone', default='America/Chicago')
+    image_tag = click.prompt('Image tag', default='latest')
+
+    tfvars_content = f'''external_port = {external_port}
+config_path = "{config_path}"
+puid = "{puid}"
+pgid = "{pgid}"
+timezone = "{timezone}"
+image_tag = "{image_tag}"
+'''
+
+    tfvars_path = f"{SONARR_TF_DIR}/terraform.tfvars"
+    with open(tfvars_path, "w") as f:
+        f.write(tfvars_content)
+
     click.echo("🚀 Deploying Sonarr with Terraform...")
 
     try:
         subprocess.run(["terraform", "init"], cwd=SONARR_TF_DIR, check=True)
         subprocess.run(["terraform", "apply", "-auto-approve"], cwd=SONARR_TF_DIR, check=True)
 
-        git_commit("Deployed Sonarr successfully")
+        git_commit(f"Deployed Sonarr on port {external_port} with tag {image_tag}")
         click.echo("✅ Sonarr deployed successfully")
-
+        
     except subprocess.CalledProcessError as e:
         git_commit(f"Failed to deploy Sonarr - error code {e.returncode}")
         click.echo("❌ Deployment failed", fg="red")
+
 
 @sonarr.command()
 def destroy():
