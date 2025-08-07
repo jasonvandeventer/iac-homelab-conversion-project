@@ -25,7 +25,7 @@ def deploy():
     """Deploy the Bazarr container with interactive configuration"""
     click.echo("🔧 Configuring Bazarr deployment...")
 
-    external_port = click.prompt('External port', default=7878, type=int)
+    external_port = click.prompt('External port', default=6767, type=int)
     config_path = click.prompt('Config directory path', default='/mnt/testconfigs/bazarr')
     puid = click.prompt('User ID (PUID)', default='1000')
     pgid = click.prompt('Group ID (PGID)', default='1000')
