@@ -3,6 +3,7 @@
 import click
 from commands import sonarr
 from commands import radarr
+from commands import bazarr
 
 @click.group()
 def cli():
@@ -11,6 +12,7 @@ def cli():
 
 cli.add_command(sonarr.sonarr)
 cli.add_command(radarr.radarr)
+cli.add_command(bazarr.bazarr)
 
 if __name__ == "__main__":
     cli()
